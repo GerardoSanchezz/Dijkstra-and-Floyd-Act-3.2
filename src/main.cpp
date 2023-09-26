@@ -1,56 +1,59 @@
 #include <iostream>
-using namespace std;
-#include "graph.h"
+#include <vector>
+#include <queue>
 #include <climits>
+#include "graph.h"
 
-// Dijkstra's algorithm 
-// Complexity: O(n^2)
+using namespace std;
 
-Graph::Graph(int n) : numNodes(n) {
-    adjacencyMatrix.resize(n, std::vector<int>(n, -1));
-}
+// Gerardo Ulises Sanchez Felix - A01641788
+// Alan Antonio Ruelas Robles - A01641426
+
+
+void readData(vector<vector<int>>& graph);
+
+/*
+ The time complexity of Dijkstra's algorithm using a priority queue (min-heap) is O(E + V log V), where:
+ ---- E is the number of edges in the graph.
+ ---- V is the number of vertices (nodes) in the graph.
+
+ The space complexity is O(V + E) because we need to store the graph
+  in an adjacency list or matrix O(V + E), and we also use additional 
+ data structures for distance and priority queue O(V).
+*/
+void dijkstraResult(vector<vector<int>>& graph);
 
 int main() {
-    int n;
-    cout << "Num of nodes: ";
-    cin >> n;
 
-    Graph graph(n);
+    vector<vector<int>> graph; 
 
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
-            int weight;
-            cin >> weight;
-            graph.addArc(i, j, weight);
-        }
-    }
+    readData(graph);
 
-    for (int i = 0; i < n; ++i) {
-        graph.dijkstra(i); // Llama a dijkstra en el contexto del objeto graph
-    }
+    cout << endl;
+
+    cout << "Dijkstra:" << endl;
+
+    dijkstraResult(graph);
 
     return 0;
 }
 
+void readData(vector<vector<int>>& graph) {
+    int n;
+    cin >> n;  
 
-// Función para encontrar el vértice con la distancia mínima no incluido en el conjunto S
-int findMinDistance(vector<int>& distance, vector<bool>& visited, int n) {
-    int minDist = INT_MAX;
-    int minIndex = -1;
-    
+    graph.resize(n, vector<int>(n));
+
     for (int i = 0; i < n; ++i) {
-        if (!visited[i] && distance[i] < minDist) {
-            minDist = distance[i];
-            minIndex = i;
+        for (int j = 0; j < n; ++j){
+            cin >> graph[i][j];
         }
     }
-    
-    return minIndex;
 }
 
-// Función para imprimir el resultado en el formato deseado
-void Graph::printDijkstra(vector<int>& distance, int n, int startNode) {
-    
+
+void printDijkstra(vector<int>& distance, int n, int startNode) {
+
     for (int i = 0; i < n; ++i) {
         if (i != startNode) {
             cout << "node " << startNode + 1 << " to node " << i + 1 << " : " << distance[i] << endl;
@@ -58,33 +61,41 @@ void Graph::printDijkstra(vector<int>& distance, int n, int startNode) {
     }
 }
 
-// Función para implementar el algoritmo de Dijkstra
-void Graph::dijkstra(int startNode) { // Cambia el tipo del parámetro
-    int n = numNodes;
+void dijkstra(vector<vector<int>>& graph, int startNode) {
+    int n = graph.size();
     vector<int> distance(n, INT_MAX);
     vector<bool> visited(n, false);
-    
+
     distance[startNode] = 0;
-    
-    for (int count = 0; count < n - 1; ++count) {
-        int u = findMinDistance(distance, visited, n);
+
+    priority_queue<Node, vector<Node>, greater<Node>> pq;
+    pq.push(Node(startNode, 0));
+
+    while (!pq.empty()) {
+        int u = pq.top().vertex;
+        pq.pop();
+
+        if (visited[u]) {
+            continue;
+        }
+
         visited[u] = true;
-        
+
         for (int v = 0; v < n; ++v) {
-            if (!visited[v] && adjacencyMatrix[u][v] != -1 && distance[u] != INT_MAX && (distance[u] + adjacencyMatrix[u][v] < distance[v])) {
-                distance[v] = distance[u] + adjacencyMatrix[u][v];
+            if (!visited[v] && graph[u][v] != -1 && (distance[u] + graph[u][v] < distance[v])) {
+                distance[v] = distance[u] + graph[u][v];
+                pq.push(Node(v, distance[v]));
             }
         }
     }
-    
+
     printDijkstra(distance, n, startNode);
 }
 
 
-void Graph::addArc(int nodoOrigen, int nodoDestino, int weight) {
-    if (nodoOrigen >= 0 && nodoOrigen < numNodes && nodoDestino >= 0 && nodoDestino < numNodes) {
-        adjacencyMatrix[nodoOrigen][nodoDestino] = weight;
+
+void dijkstraResult(vector<vector<int>>& graph){
+    for (int i = 0; i < graph.size(); ++i) {
+        dijkstra(graph, i);
     }
 }
-
-

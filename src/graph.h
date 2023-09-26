@@ -3,18 +3,18 @@
 
 #include <vector>
 
-struct Graph {
-    int numNodes;
-    std::vector<std::vector<int>> adjacencyMatrix;
+struct Node {
+    int vertex;
+    int distance;
 
-    Graph(int n);
+    Node(int v, int d) : vertex(v), distance(d) {}
 
-    void dijkstra(int startNode); // Cambia el tipo del parámetro
-
-    void addArc(int nodoOrigen, int nodoDestino, int weight); // Cambia el nombre del parámetro
-
-    void printDijkstra(vector<int>& distance, int n, int startNode);
-
+    bool operator>(const Node& other) const {
+        return distance > other.distance;
+    }
 };
 
-#endif 
+void printDijkstra(std::vector<int>& distance, int n, int startNode);
+void dijkstra(std::vector<std::vector<int>>& graph, int startNode);
+
+#endif
