@@ -49,7 +49,7 @@ int findMinDistance(vector<int>& distance, vector<bool>& visited, int n) {
 }
 
 // Función para imprimir el resultado en el formato deseado
-void printDijkstra(vector<int>& distance, int n, int startNode) {
+void Graph::printDijkstra(vector<int>& distance, int n, int startNode) {
     
     for (int i = 0; i < n; ++i) {
         if (i != startNode) {

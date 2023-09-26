@@ -13,7 +13,8 @@ struct Graph {
 
     void addArc(int nodoOrigen, int nodoDestino, int weight); // Cambia el nombre del parámetro
 
-    void printMatrix(); // Agrega esta función al archivo .h
+    void printDijkstra(vector<int>& distance, int n, int startNode);
+
 };
 
-#endif // GRAPH_H
+#endif 
