@@ -1,20 +1,15 @@
 #include <iostream>
-#include <fstream>
-#include <string>
 #include <limits>
 #include <vector>
 #include <queue>
-#include <climits>
-#include "graph.h"
+#include "Graph.h"
 
 using namespace std;
 
-float** createGraph(int, int);
-float** createMatrix(int);
-void fillMatrix(float**&, int, int);
-void setMatrixToDefault(float**&, int);
-void printMatrix(float**, int, int);
-float** floydWarshall(float**, int);
+float** createEmptyMatrix(int);
+void printMatrix(float**, int);
+float** floydWarshall(Graph);
+float** getCopyOfMatrix(float**, int);
 
 int main() {
 
@@ -25,21 +20,17 @@ int main() {
     cout << "Number of edges: ";
     cin >> numEdges;
 
-    float** adjMatrix = createGraph(numNodes, numEdges);
-    printMatrix(adjMatrix, numNodes, numNodes);
-    float** allPairs = floydWarshall(adjMatrix, numNodes);
-    printMatrix(allPairs, numNodes, numNodes);
+    Graph graph = Graph(numNodes, numEdges);
+    graph.fillMatrix();
+
+    printMatrix(graph.getWeightMatrix(), numNodes);
+    float** allPairs = floydWarshall(graph);
+    printMatrix(allPairs, numNodes);
         
     return 0;
 }
 
-float** createGraph(int numNodes, int numEdges) {
-    float** adjMatrix = createMatrix(numNodes);
-    fillMatrix(adjMatrix, numNodes, numEdges);
-    return adjMatrix;
-}
-
-float** createMatrix(int numNodes) {
+float** createEmptyMatrix(int numNodes) {
     float** matrix = new float*[numNodes];
     for(int i = 0; i < numNodes; i++) {
         matrix[i] = new float[numNodes];
@@ -47,31 +38,10 @@ float** createMatrix(int numNodes) {
     return matrix;
 }
 
-void fillMatrix(float** &adjMatrix, int numNodes, int numEdges) {
-    setMatrixToDefault(adjMatrix, numNodes);
-    int i = 0;
-    int j = 0;
-    float weight = 0;
-    for(int k = 0; k < numEdges; k++) {
-        cin >> i >> j >> weight;
-        adjMatrix[i-1][j-1] = weight;
-    }
-}
-
-void setMatrixToDefault(float** &adjMatrix, int numNodes) {
-    float Inf = numeric_limits<float>::infinity();  
+void printMatrix(float** matrix, int numNodes) {
+    cout << endl;
     for(int i = 0; i < numNodes; i++) {
         for(int j = 0; j < numNodes; j++) {
-            adjMatrix[i][j] = Inf;
-        }
-        adjMatrix[i][i] = 0;
-    }
-}
-
-void printMatrix(float** matrix, int rows, int columns) {
-    cout << endl;
-    for(int i = 0; i < rows; i++) {
-        for(int j = 0; j < columns; j++) {
             cout << matrix[i][j];
         }
         cout << endl;
@@ -79,16 +49,28 @@ void printMatrix(float** matrix, int rows, int columns) {
     cout << endl;
 }
 
-float** floydWarshall(float** weightMatrix, int numNodes) {
-    float*** D = new float**[numNodes+1];
-    D[0] = weightMatrix;
-    for(int k = 1; k < numNodes+1; k++) {
-        D[k] = createMatrix(numNodes);
-        for(int i = 0; i < numNodes; i++) {
-            for(int j = 0; j < numNodes; j++) {
-                D[k][i][j] = min(D[k-1][i][j], D[k-1][i][k] + D[k-1][k][j]);
+float** floydWarshall(Graph graph) {
+    float** previous;
+    int n = graph.getNumNodes();
+    float** current = graph.getWeightMatrix();
+    for(int k = 0; k < n; k++) {
+        previous = getCopyOfMatrix(current, n);
+        current = createEmptyMatrix(n);
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                current[i][j] = min(previous[i][j], previous[i][k] + previous[k][j]);
             }
         }
     }
-    return D[numNodes];
+    return current;
+}
+
+float** getCopyOfMatrix(float** matrix, int numNodes) {
+    float** copyMatrix = createEmptyMatrix(numNodes);
+    for(int i = 0; i < numNodes; i++) {
+        for(int j = 0; j < numNodes; j++) {
+            copyMatrix[i][j] = matrix[i][j];
+        }
+    }
+    return copyMatrix;
 }
