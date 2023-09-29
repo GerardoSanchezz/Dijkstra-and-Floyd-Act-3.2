@@ -3,6 +3,7 @@
 #include <vector>
 #include <queue>
 #include "graph.h"
+#include <fstream>
 
 // Comand to run it: g++ main.cpp Graph.cpp -o main.exe
 // ./main.exe < ../src/inputFiles/test.txt
@@ -14,6 +15,8 @@ void printMatrix(float**, int);
 float** floydWarshall(Graph);
 float** getCopyOfMatrix(float**, int);
 void dijkstra(Graph);
+int outputToFile(const Graph&, const char*, void (*algorithmFunction)(const Graph&));
+void dijkstraWrapper(const Graph&);
 
 int main() {
 
@@ -27,13 +30,14 @@ int main() {
     Graph graph = Graph(numNodes, numEdges);
     graph.fillMatrix();
 
-    // printMatrix(graph.getWeightMatrix(), numNodes);
-    // float** allPairs = floydWarshall(graph);
-    // printMatrix(allPairs, numNodes);
+    printMatrix(graph.getWeightMatrix(), numNodes);
+    float** allPairs = floydWarshall(graph);
+    printMatrix(allPairs, numNodes);
 
-    cout << "Dijkstra:" << endl;
-    dijkstra(graph);
-        
+    // cout << "Dijkstra:" << endl;
+    // dijkstra(graph);
+    outputToFile(graph, "Dijkstra.txt", dijkstraWrapper);
+     
     return 0;
 }
 
@@ -117,3 +121,30 @@ void dijkstra(Graph graph) {
         }
     }
 }
+
+void dijkstraWrapper(const Graph& graph) {
+    dijkstra(graph);
+}
+
+int outputToFile(const Graph& graph, const char* outputFileName, void (*algorithmFunction)(const Graph&)) {
+    ofstream outputFile(outputFileName);
+
+    if (!outputFile.is_open()) {
+        cerr << "Error al abrir el archivo " << outputFileName << endl;
+        return 1;
+    }
+
+    
+    streambuf* originalCoutStream = cout.rdbuf(); 
+    cout.rdbuf(outputFile.rdbuf()); 
+
+    
+    algorithmFunction(graph);
+
+    cout.rdbuf(originalCoutStream); 
+
+    outputFile.close(); 
+
+    return 0;
+}
+
