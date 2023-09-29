@@ -36,7 +36,7 @@ int main() {
 
     // cout << "Dijkstra:" << endl;
     // dijkstra(graph);
-    matrixToFile(allPairs, numNodes, "Dijkstra.txt");
+    matrixToFile(allPairs, numNodes, "Floyd-Warshall.txt");
      
     return 0;
 }
