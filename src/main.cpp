@@ -5,8 +5,8 @@
 #include <queue>
 #include "graph.h"
 
-// Comand to run it: g++ main.cpp Graph.cpp -o main.exe
-// ./main.exe < ../src/inputFiles/test.txt
+// Compile it with: g++ main.cpp Graph.cpp -o main.exe
+// Run it with: ./main.exe < ../src/inputFiles/test.txt (or whatever input file you want)
 
 using namespace std;
 
@@ -18,6 +18,7 @@ float** dijkstraForAllNodes(Graph);
 float* dijkstra(Graph, int);
 void floydWarshallToFile(float**, int, string);
 void dijkstraToFile(float**, int, string);
+void releaseMatrix(float**, int);
 
 int main() {
 
@@ -30,15 +31,18 @@ int main() {
 
     Graph graph = Graph(numNodes, numEdges);
     graph.fillMatrix();
-    printMatrix(graph.getWeightMatrix(), numNodes);
+    // printMatrix(graph.getWeightMatrix(), numNodes);
 
     float** allPairs = floydWarshall(graph);
-    printMatrix(allPairs, numNodes);
+    // printMatrix(allPairs, numNodes);
     floydWarshallToFile(allPairs, numNodes, "Floyd-Warshall.txt");
 
+    releaseMatrix(allPairs, numNodes);
+
     float** dijk = dijkstraForAllNodes(graph);
-    printMatrix(dijk, numNodes);
+    // printMatrix(dijk, numNodes);
     dijkstraToFile(dijk, numNodes, "Dijkstra.txt");
+    releaseMatrix(dijk, numNodes);
      
     return 0;
 }
@@ -178,3 +182,11 @@ void dijkstraToFile(float** matrix, int numNodes, string fileName) {
 
     outputFile.close();
 }
+
+void releaseMatrix(float** matrix, int n) {
+    for(int i = 0; i < n; i++) {
+        delete[] matrix[i];
+    }
+    delete[] matrix;
+}
+
