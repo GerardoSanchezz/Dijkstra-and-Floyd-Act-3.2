@@ -12,8 +12,8 @@ class Graph {
         int getNumEdges();
         float** getWeightMatrix();
         void createMatrix();
-        void fillMatrix();
         void setMatrixToDefault();
+        void fillMatrix();
 
 };
 

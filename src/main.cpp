@@ -15,7 +15,7 @@ void printMatrix(float**, int);
 float** floydWarshall(Graph);
 float** getCopyOfMatrix(float**, int);
 void dijkstra(Graph);
-int outputToFile(const Graph&, const char*, void (*algorithmFunction)(const Graph&));
+void matrixToFile(float**, int, string);
 void dijkstraWrapper(const Graph&);
 
 int main() {
@@ -36,7 +36,7 @@ int main() {
 
     // cout << "Dijkstra:" << endl;
     // dijkstra(graph);
-    outputToFile(graph, "Dijkstra.txt", dijkstraWrapper);
+    matrixToFile(allPairs, numNodes, "Dijkstra.txt");
      
     return 0;
 }
@@ -148,3 +148,21 @@ int outputToFile(const Graph& graph, const char* outputFileName, void (*algorith
     return 0;
 }
 
+void matrixToFile(float** matrix, int numNodes, string fileName) {
+    fileName = "../src/outputFiles/" + fileName;
+    ofstream outputFile(fileName);
+
+    if (!outputFile.is_open()) {
+        cerr << "Error al abrir el archivo " << fileName << endl;
+        return;
+    }
+
+    for(int i = 0; i < numNodes; i++) {
+        for(int j = 0; j < numNodes; j++) {
+            outputFile << matrix[i][j] <<  '\t';
+        }
+        outputFile << endl;
+    }
+
+    outputFile.close();
+}
