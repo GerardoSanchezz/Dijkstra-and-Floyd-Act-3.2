@@ -1,9 +1,9 @@
 #include <iostream>
+#include <fstream>
 #include <limits>
 #include <vector>
 #include <queue>
 #include "graph.h"
-#include <fstream>
 
 // Comand to run it: g++ main.cpp Graph.cpp -o main.exe
 // ./main.exe < ../src/inputFiles/test.txt
@@ -14,9 +14,10 @@ float** createEmptyMatrix(int);
 void printMatrix(float**, int);
 float** floydWarshall(Graph);
 float** getCopyOfMatrix(float**, int);
-void dijkstra(Graph);
-void matrixToFile(float**, int, string);
-void dijkstraWrapper(const Graph&);
+float** dijkstraForAllNodes(Graph);
+float* dijkstra(Graph, int);
+void floydWarshallToFile(float**, int, string);
+void dijkstraToFile(float**, int, string);
 
 int main() {
 
@@ -29,14 +30,15 @@ int main() {
 
     Graph graph = Graph(numNodes, numEdges);
     graph.fillMatrix();
-
     printMatrix(graph.getWeightMatrix(), numNodes);
+
     float** allPairs = floydWarshall(graph);
     printMatrix(allPairs, numNodes);
+    floydWarshallToFile(allPairs, numNodes, "Floyd-Warshall.txt");
 
-    // cout << "Dijkstra:" << endl;
-    // dijkstra(graph);
-    matrixToFile(allPairs, numNodes, "Floyd-Warshall.txt");
+    float** dijk = dijkstraForAllNodes(graph);
+    printMatrix(dijk, numNodes);
+    dijkstraToFile(dijk, numNodes, "Dijkstra.txt");
      
     return 0;
 }
@@ -86,69 +88,58 @@ float** getCopyOfMatrix(float** matrix, int numNodes) {
     return copyMatrix;
 }
 
-void dijkstra(Graph graph) {
+float** dijkstraForAllNodes(Graph graph) {
     int n = graph.getNumNodes();
+    float** shortestDistances = createEmptyMatrix(n);
+    for(int source = 0; source < n; source++) {
+        shortestDistances[source] = dijkstra(graph, source);
+    }
+    return shortestDistances;
+}
+
+float* dijkstra(Graph graph, int source) {
+    int n = graph.getNumNodes();
+    float Inf = numeric_limits<float>::infinity();  
     float** weightMatrix = graph.getWeightMatrix();
+    
+    float* distances = new float[n];
+    for(int i = 0; i < n; i++) {
+        distances[i] = Inf;
+    }
+    distances[source] = 0; 
 
-    for (int source = 0; source < n; ++source) {
-        vector<float> distance(n, numeric_limits<float>::infinity());
-        vector<int> previous(n, -1);
-        priority_queue<pair<float, int>, vector<pair<float, int>>, greater<pair<float, int>>> pq;
+    int* previous = new int[n];
+    for(int i = 0; i < n; i++) {
+        previous[i] = -1;
+    }
 
-        distance[source] = 0;
-        pq.push(make_pair(0, source));
+    vector<int> S;
 
-        while (!pq.empty()) {
-            int u = pq.top().second;
-            pq.pop();
+    priority_queue<pair<float, int>, vector<pair<float, int>>, greater<pair<float, int>>> pq;
 
-            for (int v = 0; v < n; ++v) {
-                if (weightMatrix[u][v] > 0) {
-                    float newDistance = distance[u] + weightMatrix[u][v];
-                    if (newDistance < distance[v]) {
-                        distance[v] = newDistance;
-                        previous[v] = u;
-                        pq.push(make_pair(distance[v], v));
-                    }
+    pq.push(make_pair(0, source));
+
+
+    while (!pq.empty()) {
+        int u = pq.top().second;
+        pq.pop();
+        S.push_back(u);
+        for (int v = 0; v < n; v++) {
+            bool isAdjacent = weightMatrix[u][v] != Inf;
+            if (isAdjacent) {
+                if (distances[v] > distances[u] + weightMatrix[u][v]) {
+                    distances[v] = distances[u] + weightMatrix[u][v];
+                    previous[v] = u;
+                    pq.push(make_pair(distances[v], v));
                 }
             }
         }
-
-        for (int destination = 0; destination < n; ++destination) {
-            if (destination != source) {
-                cout << "node " << (source + 1) << " to node " << (destination + 1) << " : " << distance[destination] << endl;
-            }
-        }
     }
-}
-
-void dijkstraWrapper(const Graph& graph) {
-    dijkstra(graph);
-}
-
-int outputToFile(const Graph& graph, const char* outputFileName, void (*algorithmFunction)(const Graph&)) {
-    ofstream outputFile(outputFileName);
-
-    if (!outputFile.is_open()) {
-        cerr << "Error al abrir el archivo " << outputFileName << endl;
-        return 1;
-    }
-
     
-    streambuf* originalCoutStream = cout.rdbuf(); 
-    cout.rdbuf(outputFile.rdbuf()); 
-
-    
-    algorithmFunction(graph);
-
-    cout.rdbuf(originalCoutStream); 
-
-    outputFile.close(); 
-
-    return 0;
+    return distances;
 }
 
-void matrixToFile(float** matrix, int numNodes, string fileName) {
+void floydWarshallToFile(float** matrix, int numNodes, string fileName) {
     fileName = "../src/outputFiles/" + fileName;
     ofstream outputFile(fileName);
 
@@ -160,6 +151,27 @@ void matrixToFile(float** matrix, int numNodes, string fileName) {
     for(int i = 0; i < numNodes; i++) {
         for(int j = 0; j < numNodes; j++) {
             outputFile << matrix[i][j] <<  '\t';
+        }
+        outputFile << endl;
+    }
+
+    outputFile.close();
+}
+
+void dijkstraToFile(float** matrix, int numNodes, string fileName) {
+    fileName = "../src/outputFiles/" + fileName;
+    ofstream outputFile(fileName);
+
+    if (!outputFile.is_open()) {
+        cerr << "Error al abrir el archivo " << fileName << endl;
+        return;
+    }
+
+    for (int source = 0; source < numNodes; source++) {
+        for (int destination = 0; destination < numNodes; destination++) {
+            if (destination != source) {
+                outputFile << "node " << (source + 1) << " to node " << (destination + 1) << " : " << matrix[source][destination]  << endl;
+            }
         }
         outputFile << endl;
     }
