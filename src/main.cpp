@@ -4,6 +4,7 @@
 #include <vector>
 #include <queue>
 #include "graph.h"
+#include <stdexcept> 
 
 // Compile it with: g++ main.cpp Graph.cpp -o main.exe
 // Run it with: ./main.exe < ../src/inputFiles/test.txt (or whatever input file you want)
@@ -28,6 +29,11 @@ int main() {
     cin >> numNodes;
     cout << "Number of edges: ";
     cin >> numEdges;
+
+    if (numNodes <= 0 || numEdges <= 0) {
+        cout << endl;
+        throw invalid_argument("Number of nodes and edges must be positive.");
+    }
 
     Graph graph = Graph(numNodes, numEdges);
     graph.fillMatrix();
@@ -78,6 +84,8 @@ float** floydWarshall(Graph graph) {
                 current[i][j] = min(previous[i][j], previous[i][k] + previous[k][j]);
             }
         }
+        // Liberar la memoria de 'previous' antes de la siguiente iteración
+        releaseMatrix(previous, n);
     }
     return current;
 }
