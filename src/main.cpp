@@ -24,8 +24,11 @@ void releaseMatrix(float**, int);
 /* 
 The complexity of this implementation of the Dijkstra's algorithm is O((V + E) * log(V)).
 Where:
-V represents the number of nodes in the graph.
-E represents the number of edges.
+- V represents the number of nodes in the graph.
+- E represents the number of edges.
+
+We decided to use a priority queue to store the nodes that are adjacent to the current node because
+is more efficient than using a vector and sorting it every time we add a new node to it.
 */
 
 int main() {
