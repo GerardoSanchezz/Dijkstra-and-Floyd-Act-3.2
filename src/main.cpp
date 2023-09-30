@@ -21,6 +21,13 @@ void floydWarshallToFile(float**, int, string);
 void dijkstraToFile(float**, int, string);
 void releaseMatrix(float**, int);
 
+/* 
+The complexity of this implementation of the Dijkstra's algorithm is O((V + E) * log(V)).
+Where:
+V represents the number of nodes in the graph.
+E represents the number of edges.
+*/
+
 int main() {
 
     int numNodes = 0;
@@ -84,7 +91,6 @@ float** floydWarshall(Graph graph) {
                 current[i][j] = min(previous[i][j], previous[i][k] + previous[k][j]);
             }
         }
-        // Liberar la memoria de 'previous' antes de la siguiente iteración
         releaseMatrix(previous, n);
     }
     return current;
