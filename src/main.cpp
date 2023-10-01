@@ -31,6 +31,14 @@ We decided to use a priority queue to store the nodes that are adjacent to the c
 is more efficient than using a vector and sorting it every time we add a new node to it.
 */
 
+/*
+ABOUT TEST CASES:
+test1: We decided to include this case because we already knew the answer.
+test2: We decided to include this case because it has a negative weights.
+test3: In this case, a disconnected graph is created with two separate components
+test4: This is a graph with only one node. 
+*/
+
 int main() {
 
     int numNodes = 0;
