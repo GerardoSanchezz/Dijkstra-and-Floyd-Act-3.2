@@ -10,7 +10,7 @@
 // Gerardo Ulises Sanchez Felix - A01641788
 // Alan Antonio Ruelas Robles - A01641426
 
-// Compile it with: g++ main.cpp Graph.cpp -o main.exe
+// Compile it with: g++ main.cpp -o main.exe
 // Run it with: ./main.exe < ../src/inputFiles/test.txt (or whatever input file you want)
 
 using namespace std;
@@ -61,6 +61,53 @@ test2: We decided to include this case because it has a negative weights.
 test3: In this case, a disconnected graph is created with two separate components
 test4: This is a graph with only one node. 
 */
+
+Graph::Graph(int numNodes, int numEdges) {
+    this->numNodes = numNodes;
+    this->numEdges = numEdges;
+    createMatrix();
+    setMatrixToDefault();
+}
+
+int Graph::getNumNodes() {
+    return this->numNodes;
+}
+
+int Graph::getNumEdges() {
+    return this->numEdges;
+}
+
+float** Graph::getWeightMatrix() {
+    return this->weightMatrix;
+}
+       
+void Graph::createMatrix() {
+    this->weightMatrix = new float*[this->numNodes];
+    for(int i = 0; i < this->numNodes; i++) {
+        this->weightMatrix[i] = new float[this->numNodes];
+    }
+}
+       
+void Graph::setMatrixToDefault() {
+    float Inf = numeric_limits<float>::infinity();  
+    for(int i = 0; i < this->numNodes; i++) {
+        for(int j = 0; j < this->numNodes; j++) {
+            this->weightMatrix[i][j] = Inf;
+        }
+        this->weightMatrix[i][i] = 0;
+    }
+}
+
+void Graph::fillMatrix() {
+    int i = 0;
+    int j = 0;
+    float weight = 0;
+    for(int k = 0; k < this->numEdges; k++) {
+        cin >> i >> j >> weight;
+        this->weightMatrix[i][j] = weight;
+    }
+}
+
 
 int main() {
 
