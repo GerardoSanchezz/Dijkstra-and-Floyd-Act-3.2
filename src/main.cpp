@@ -6,6 +6,10 @@
 #include "graph.h"
 #include <stdexcept> 
 
+// Authors:
+// Gerardo Ulises Sanchez Felix - A01641788
+// Alan Antonio Ruelas Robles - A01641426
+
 // Compile it with: g++ main.cpp Graph.cpp -o main.exe
 // Run it with: ./main.exe < ../src/inputFiles/test.txt (or whatever input file you want)
 
@@ -22,13 +26,32 @@ void dijkstraToFile(float**, int, string);
 void releaseMatrix(float**, int);
 
 /* 
+DIJKSTRA'S ALGORITHM:
 The complexity of this implementation of the Dijkstra's algorithm is O((V + E) * log(V)).
 Where:
 - V represents the number of nodes in the graph.
 - E represents the number of edges.
 
+The space complexity is O(V^2).
+Where:
+- V represents the number of nodes in the graph.
+
+ The dominant factor here is the weightMatrix, which has a quadratic relationship with the number of nodes.
+
 We decided to use a priority queue to store the nodes that are adjacent to the current node because
 is more efficient than using a vector and sorting it every time we add a new node to it.
+*/
+
+/*
+FLOYD-WARSHALL ALGORITHM:
+The complexity of this implementation of the Floyd-Warshall algorithm is O(V^3).
+Where:
+- V represents the number of nodes in the graph.
+This is because we have three nested loops, each one of them iterating over all the nodes in the graph.
+
+About the space complexity, we have to store the weight matrix of the graph and the previous matrix.
+The weight matrix is a matrix of size VxV, and the previous matrix is a matrix of size VxV.
+So, the space complexity is O(V^2).
 */
 
 /*
